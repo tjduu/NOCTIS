@@ -129,7 +129,6 @@ def print_post_norm_stats_day(X, channel_mean, channel_std):
             f"mean={vals.mean():.4f}, std={vals.std():.4f}"
         )
 
-
 def print_post_norm_stats(X_norm):
     """
     X_norm : np.ndarray or torch.Tensor, shape (T, C, H, W)
@@ -347,7 +346,6 @@ def prepare_3ch_cams(in_path, out_path, clip_csi=(0.0, 1.0), eps=1e-6):
     print(f"  • Saved to:       {out_path}\n")
 
 
-
 def clone_cams_15min_with_labels(
     path_syn, 
     path_cams_15min, 
@@ -376,7 +374,6 @@ def clone_cams_15min_with_labels(
     else:
         data_out = data_cams.copy()
         
-    
     # Channel 1 is csGHI. If the entire grid is <= eps, it is night.
     is_cams_night = np.all(data_out[:, 1, :, :] <= eps, axis=(1, 2))
     
@@ -415,3 +412,81 @@ def clone_cams_15min_with_labels(
     print(f"✅ Saved 15-min grid to: {out_path}")
     print(f"  • Successfully matched & injected {len(merged_clean)} frames.")
     print(f"  • {np.sum(is_cams_night) - len(merged_clean)} frames failed to match and retained the {missing_label} label.")
+
+def qc_check_X(X_tensor):
+    print("=== QC Report for Feature Tensor X ===\n")
+    
+    print("--- 1. Basic Properties ---")
+    print(f"Shape: {X_tensor.shape}")
+    print(f"Data Type: {X_tensor.dtype}")
+    print("\n--- 2. Mathematical Integrity ---")
+    nan_count = np.isnan(X_tensor).sum()
+    inf_count = np.isinf(X_tensor).sum()
+    
+    print(f"Total NaNs: {nan_count}")
+    print(f"Total Infs: {inf_count}")
+    
+    if nan_count == 0 and inf_count == 0:
+        print("✅ PASS: X is completely clean of NaNs and infinite values.")
+    else:
+        print("❌ FAIL: X contains invalid values. Check your interpolation/division steps.")
+        
+    print("\n--- 3. Normalized TBB Channels (0-8) ---")
+    tbb_data = X_tensor[:, :9, :, :]
+    tbb_min = np.nanmin(tbb_data)
+    tbb_max = np.nanmax(tbb_data)
+    tbb_mean = np.nanmean(tbb_data)
+    
+    print(f"Global Min:  {tbb_min:.4f}  (Expected: ~0.1 to 0.4 for very cold clouds)")
+    print(f"Global Max:  {tbb_max:.4f}  (Expected: ~1.0 to 1.5 for hot ground)")
+    print(f"Global Mean: {tbb_mean:.4f}")
+    
+    if tbb_max > 5.0 or tbb_min < 0.0:
+        print("❌ WARNING: Values are way outside expected bounds. Did you forget to convert Celsius to Kelvin?")
+    else:
+        print("✅ PASS: (T_sat / T_surface)^4 normalization range looks physically sound.")
+
+    if X_tensor.shape[1] > 9:
+        print("\n--- 4. Auxiliary Geo-Channels (9-11) ---")
+        aux_data = X_tensor[:, 9:, :, :]
+        print(f"Global Min:  {np.nanmin(aux_data):.4f}")
+        print(f"Global Max:  {np.nanmax(aux_data):.4f}")
+        print(f"Global Mean: {np.nanmean(aux_data):.4f}")
+
+def create_stale_baseline(input_path, output_path, safe_threshold=5.0):
+    print(f"Loading data from: {input_path}")
+    npz_data = np.load(input_path)
+    
+    data = npz_data['data'].copy()
+    time = npz_data['time']
+    csghi = data[:, 1, :, :]
+    
+    print("Identifying fully clean daytime grids...")
+    # A grid is only "clean" if the absolute darkest pixel is above safe threshold
+    min_csghi_per_step = np.min(csghi, axis=(1, 2))
+    is_clean_day = (min_csghi_per_step > safe_threshold)
+    
+    # We need an initial valid CSI. We'll find the very first clean day in the dataset.
+    first_clean_idx = np.where(is_clean_day)[0][0]
+    last_clean_csi = data[first_clean_idx, 2, :, :].copy()
+    
+    print("Applying robust forward-fill...")
+    overwritten_frames = 0
+    
+    for i in range(len(time)):
+        if is_clean_day[i]:
+            
+            last_clean_csi = data[i, 2, :, :]
+        else:
+            # The grid is experiencing dusk, night, or dawn. 
+            # Freeze the CSI to prevent slicing cuts and zero-division artifacts.
+            data[i, 2, :, :] = last_clean_csi
+            overwritten_frames += 1
+            
+    print(f"Total frames overwritten (night + twilight transitions): {overwritten_frames} / {len(time)}")
+    
+    print(f"Saving robust baseline to: {output_path}")
+    np.savez_compressed(output_path, data=data, time=time)
+    print("Save complete!")
+    
+    npz_data.close()
