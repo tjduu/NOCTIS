@@ -1,0 +1,32 @@
+aft_seq_length: 96
+data_name: csi
+dataname: csi_weather
+epoch: 50
+hidden_channels: 64
+in_channels: 96
+in_shape:
+- 96
+- 1
+- 64
+- 64
+lr: 0.0005
+method: fno
+metrics:
+- mae
+- mse
+- rmse
+min_lr: 1.0e-06
+modes: 32
+opt: adamw
+opt_betas: !!python/tuple
+- 0.9
+- 0.999
+opt_eps: 1.0e-08
+out_channels: 96
+pre_seq_length: 96
+sched: cosine
+steps_per_epoch: 151
+total_length: 192
+warmup_epoch: 10
+warmup_lr: 1.0e-05
+weight_decay: 0.1
