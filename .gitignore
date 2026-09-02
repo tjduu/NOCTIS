@@ -1,0 +1,17 @@
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Data and Checkpoints
+data/
+forecast_checkpoint/
+model_checkpoint/
+results/
+notrack/
+notebooks/plots/
