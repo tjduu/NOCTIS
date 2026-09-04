@@ -1,4 +1,4 @@
-name: solar-forecasting
+name: noctis
 channels:
   - pytorch
   - conda-forge

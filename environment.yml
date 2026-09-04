@@ -1,4 +1,4 @@
-name: nocitis
+name: noctis
 channels:
   - conda-forge
   - defaults

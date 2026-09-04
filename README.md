@@ -1,4 +1,4 @@
-# NOCITIS: Nocturnal Optical Cloud Tracking via Infrared Synthesis
+# noctis: Nocturnal Optical Cloud Tracking via Infrared Synthesis
 
 This repository provides the official implementation accompanying the paper on the **NOCTIS** (Nocturnal Optical Cloud Tracking via Infrared Synthesis) framework.
 
@@ -14,7 +14,7 @@ Satellite-based solar forecasting fundamentally relies on visible and near-infra
 ## Repository Structure
 
 ```text
-NOCITIS/
+noctis/
 ├── data/                       # CAMS grid data and synthetic cloud labels
 │   ├── cams/
 │   ├── grid/
@@ -29,7 +29,7 @@ NOCITIS/
 │   ├── run_fno.py              # FNO inference and HKO station IDW interpolation
 │   └── run_optical_flow.py     # Optical Flow baseline evaluation
 ├── src/
-│   └── nocitis/                # Core Python package (models, loss functions, dataloaders)
+│   └── noctis/                # Core Python package (models, loss functions, dataloaders)
 ├── environment.yml             # Conda environment definition
 └── README.md
 
