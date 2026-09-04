@@ -20,6 +20,10 @@ dependencies:
       - timm>=0.9
       - neuraloperator
       - opencv-python
+      - sympy
+      - mpmath
+      - PyYAML
+      - torch_geometric
       # --- Other tools ---
       - kornia>=0.7
       - segmentation-models-pytorch>=0.3
