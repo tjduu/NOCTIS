@@ -7,8 +7,8 @@ from torch.amp import autocast
 from torch.cuda.amp import GradScaler
 from torch.optim.lr_scheduler import OneCycleLR
 
-from nocitis.gum.loss import combined_loss
-from nocitis.gum.utils import crop_back, pad_to_32
+from noctis.gum.loss import combined_loss
+from noctis.gum.utils import crop_back, pad_to_32
 
 
 def moe_balance(g):

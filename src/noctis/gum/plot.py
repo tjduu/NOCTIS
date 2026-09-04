@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch
 import torch.nn.functional as F
-from nocitis.gum.utils import crop_back, pad_to_32
+from noctis.gum.utils import crop_back, pad_to_32
 
 def plot_full_images_from_loader(model, test_loader, device, ghi_cs_test,
                                  n_samples=10, seed=42):

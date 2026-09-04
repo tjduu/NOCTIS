@@ -3,7 +3,7 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from typing import Dict, Any
-from nocitis.gum.utils import pad_to_32, crop_back 
+from noctis.gum.utils import pad_to_32, crop_back 
 
 
 @torch.no_grad()

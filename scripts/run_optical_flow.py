@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from pathlib import Path
-from nocitis.forecast.utils import get_hko_idw_weights, is_valid_csi,
+from noctis.forecast.utils import get_hko_idw_weights, is_valid_csi,
 
 
 def run_rolling_oflow_short_horizon(

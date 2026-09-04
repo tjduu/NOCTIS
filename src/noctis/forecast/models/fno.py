@@ -2,14 +2,7 @@ from neuralop.models import FNO
 import torch.nn as nn
 import lightning as L
 import torch
-class PersistenceDefeatingLoss(nn.Module):
-    def __init__(self, beta=0.1):
-        super().__init__()
-        # Smooth L1 handles FNO's unbounded predictions perfectly
-        self.smooth_l1 = nn.SmoothL1Loss(beta=beta)
-    def forward(self, pred, target):
-        return self.smooth_l1(pred, target)
-
+from noctis.forecast.loss import PersistenceDefeatingLoss
 
 class FNOForecaster(L.LightningModule):
     def __init__(self, config, **kwargs):

@@ -10,9 +10,9 @@ from pathlib import Path
 # --- BYPASS OpenMP CONFLICT ON macOS --- # comment out if not on macOS
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-from nocitis.forecast.models.fno import FNOForecaster   
-from nocitis.forecast.datasets.dataloader_csi import CSIDailyAlignedDataset15minsslide
-from nocitis.forecast.utils import get_hko_idw_weights
+from noctis.forecast.models.fno import FNOForecaster   
+from noctis.forecast.datasets.dataloader_csi import CSIDailyAlignedDataset15minsslide
+from noctis.forecast.utils import get_hko_idw_weights
 
 # ==========================================
 # 2. IN-MEMORY INFERENCE & INTERPOLATION
